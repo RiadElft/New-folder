@@ -13,8 +13,8 @@ class Category {
      */
     public static function all($includeInactive = false) {
         $db = db();
-        $where = $includeInactive ? '' : 'WHERE isActive = 1';
-        $stmt = $db->query("SELECT * FROM categories $where ORDER BY sortOrder ASC, name ASC");
+        $where = $includeInactive ? '' : 'WHERE "isActive" = 1';
+        $stmt = $db->query("SELECT * FROM categories $where ORDER BY \"sortOrder\" ASC, name ASC");
         return $stmt->fetchAll();
     }
 
@@ -33,7 +33,7 @@ class Category {
      */
     public static function topLevel() {
         $db = db();
-        $stmt = $db->query("SELECT * FROM categories WHERE parentId IS NULL AND isActive = 1 ORDER BY sortOrder ASC");
+        $stmt = $db->query("SELECT * FROM categories WHERE \"parentId\" IS NULL AND \"isActive\" = 1 ORDER BY \"sortOrder\" ASC");
         return $stmt->fetchAll();
     }
 
@@ -42,7 +42,7 @@ class Category {
      */
     public static function children($parentId) {
         $db = db();
-        $stmt = $db->prepare("SELECT * FROM categories WHERE parentId = ? AND isActive = 1 ORDER BY sortOrder ASC");
+        $stmt = $db->prepare("SELECT * FROM categories WHERE \"parentId\" = ? AND \"isActive\" = 1 ORDER BY \"sortOrder\" ASC");
         $stmt->execute([$parentId]);
         return $stmt->fetchAll();
     }

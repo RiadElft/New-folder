@@ -19,17 +19,17 @@ class Product {
         $params = [];
 
         if (!empty($filters['categoryId'])) {
-            $where[] = 'p.categoryId = ?';
+            $where[] = 'p."categoryId" = ?';
             $params[] = $filters['categoryId'];
         }
 
         if (!empty($filters['subcategoryId'])) {
-            $where[] = 'p.subcategoryId = ?';
+            $where[] = 'p."subcategoryId" = ?';
             $params[] = $filters['subcategoryId'];
         }
 
         if (isset($filters['inStock']) && $filters['inStock'] === true) {
-            $where[] = 'p.inStock = 1';
+            $where[] = 'p."inStock" = 1';
         }
 
         if (!empty($filters['badge'])) {
@@ -48,7 +48,7 @@ class Product {
         }
 
         if (!empty($filters['search'])) {
-            $where[] = '(p.name LIKE ? OR p.description LIKE ? OR p.shortDescription LIKE ?)';
+            $where[] = '(p.name LIKE ? OR p.description LIKE ? OR p."shortDescription" LIKE ?)';
             $searchTerm = '%' . $filters['search'] . '%';
             $params[] = $searchTerm;
             $params[] = $searchTerm;
@@ -58,7 +58,7 @@ class Product {
         $whereClause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
         // Sorting
-        $orderBy = 'p.createdAt DESC';
+        $orderBy = 'p."createdAt" DESC';
         if (!empty($filters['sortBy'])) {
             $sortDirection = $filters['sortDirection'] ?? 'ASC';
             switch ($filters['sortBy']) {
@@ -72,7 +72,7 @@ class Product {
                     $orderBy = "p.rating $sortDirection";
                     break;
                 case 'createdAt':
-                    $orderBy = "p.createdAt $sortDirection";
+                    $orderBy = "p.\"createdAt\" $sortDirection";
                     break;
             }
         }
@@ -86,7 +86,7 @@ class Product {
         // Get products
         $sql = "SELECT p.*, c.name as categoryName, c.slug as categorySlug 
                 FROM products p 
-                LEFT JOIN categories c ON p.categoryId = c.id 
+                LEFT JOIN categories c ON p.\"categoryId\" = c.id 
                 $whereClause 
                 ORDER BY $orderBy 
                 LIMIT ? OFFSET ?";
@@ -121,7 +121,7 @@ class Product {
         $db = db();
         $stmt = $db->prepare("SELECT p.*, c.name as categoryName, c.slug as categorySlug 
                              FROM products p 
-                             LEFT JOIN categories c ON p.categoryId = c.id 
+                             LEFT JOIN categories c ON p.\"categoryId\" = c.id 
                              WHERE p.slug = ?");
         $stmt->execute([$slug]);
         $product = $stmt->fetch();
@@ -158,7 +158,7 @@ class Product {
      */
     public static function featured($limit = 8) {
         $db = db();
-        $stmt = $db->prepare("SELECT * FROM products WHERE badge = 'bestseller' AND inStock = 1 ORDER BY rating DESC LIMIT ?");
+        $stmt = $db->prepare("SELECT * FROM products WHERE badge = 'bestseller' AND \"inStock\" = 1 ORDER BY rating DESC LIMIT ?");
         $stmt->execute([$limit]);
         $products = $stmt->fetchAll();
 
@@ -175,7 +175,7 @@ class Product {
      */
     public static function related($productId, $categoryId, $limit = 4) {
         $db = db();
-        $stmt = $db->prepare("SELECT * FROM products WHERE categoryId = ? AND id != ? AND inStock = 1 ORDER BY RAND() LIMIT ?");
+        $stmt = $db->prepare("SELECT * FROM products WHERE \"categoryId\" = ? AND id != ? AND \"inStock\" = 1 ORDER BY RANDOM() LIMIT ?");
         $stmt->execute([$categoryId, $productId, $limit]);
         $products = $stmt->fetchAll();
 
