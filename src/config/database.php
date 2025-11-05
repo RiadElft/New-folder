@@ -12,7 +12,24 @@ class Database {
 
     private function __construct() {
         try {
-            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
+            // Detect database type: PostgreSQL if host contains "postgres" or port is 5432
+            $dbPort = getenv('DB_PORT') ?: (defined('DB_PORT') && DB_PORT ? DB_PORT : '');
+            $isPostgres = (
+                stripos(DB_HOST, 'postgres') !== false || 
+                $dbPort == '5432' ||
+                getenv('DB_TYPE') === 'postgresql'
+            );
+            
+            if ($isPostgres) {
+                // PostgreSQL connection
+                $port = $dbPort ?: '5432';
+                $dsn = "pgsql:host=" . DB_HOST . ";port=" . $port . ";dbname=" . DB_NAME;
+            } else {
+                // MySQL connection (default)
+                $port = $dbPort ?: '3306';
+                $dsn = "mysql:host=" . DB_HOST . ";port=" . $port . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
+            }
+            
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

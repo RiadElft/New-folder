@@ -4,9 +4,9 @@
  * Main configuration file for Sultan Library PHP application
  */
 
-// Environment
-define('APP_ENV', 'development');
-define('APP_DEBUG', true);
+// Environment - Read from environment variables if set (for production)
+define('APP_ENV', getenv('APP_ENV') ?: 'development');
+define('APP_DEBUG', filter_var(getenv('APP_DEBUG') ?: 'true', FILTER_VALIDATE_BOOLEAN));
 
 // Paths
 define('ROOT_PATH', dirname(__DIR__, 2));
@@ -14,17 +14,19 @@ define('PUBLIC_PATH', ROOT_PATH . '/public');
 define('SRC_PATH', ROOT_PATH . '/src');
 define('VIEWS_PATH', SRC_PATH . '/views');
 
-// URLs
-define('BASE_URL', '/php-app/public/');
-define('ASSETS_URL', BASE_URL . 'images/');
-define('UPLOADS_URL', BASE_URL . 'uploads/');
+// URLs - Read from environment variables if set (for production)
+define('BASE_URL', getenv('BASE_URL') ?: '/php-app/public/');
+define('ASSETS_URL', getenv('ASSETS_URL') ?: (BASE_URL . 'images/'));
+define('UPLOADS_URL', getenv('UPLOADS_URL') ?: (BASE_URL . 'uploads/'));
 
 // Database Configuration
-// Update these with your IONOS database credentials
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'shop');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+// Read from environment variables if set (for production on Render)
+// Otherwise use local development defaults
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_NAME', getenv('DB_NAME') ?: 'shop');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: '');
+define('DB_PORT', getenv('DB_PORT') ?: '');
 define('DB_CHARSET', 'utf8mb4');
 
 // Session Configuration
@@ -47,8 +49,8 @@ define('DEFAULT_SHIPPING_COST', 9.99);
 // Pagination
 define('PRODUCTS_PER_PAGE', 16);
 
-// Timezone
-date_default_timezone_set('Europe/Paris');
+// Timezone - Read from environment variable if set
+date_default_timezone_set(getenv('TIMEZONE') ?: 'Europe/Paris');
 
 // Error Reporting
 if (APP_DEBUG) {
