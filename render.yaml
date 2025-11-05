@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: sultan-library
+    env: php
+    buildCommand: ""
+    startCommand: php -S 0.0.0.0:$PORT -t public
+    envVars:
+      - key: PHP_VERSION
+        value: 8.1
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: DB_HOST
+        sync: false  # Set manually in Render dashboard
+      - key: DB_NAME
+        sync: false  # Set manually in Render dashboard
+      - key: DB_USER
+        sync: false  # Set manually in Render dashboard
+      - key: DB_PASS
+        sync: false  # Set manually in Render dashboard
+      - key: BASE_URL
+        generateValue: true
+      - key: ASSETS_URL
+        sync: false
+      - key: UPLOADS_URL
+        sync: false
+
